@@ -14,61 +14,79 @@
         }
 
         .box {
-            width: 320px;
-            padding: 20px;
+            width: 280px; /* nhỏ gọn hơn */
+            padding: 18px;
             border: 1px solid white;
             border-radius: 10px;
         }
 
         input {
             width: 100%;
-            padding: 8px;
-            margin: 6px 0;
+            padding: 6px;
+            margin: 5px 0;
             background: black;
             color: white;
             border: 1px solid white;
+            font-size: 13px;
         }
 
-        label {
-            font-size: 14px;
+        .error {
+            color: red;
+            font-size: 12px;
+            margin-top: -3px;
+            margin-bottom: 5px;
         }
 
         button {
             width: 100%;
-            padding: 8px;
+            padding: 7px;
             background: white;
             color: black;
             border: none;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 8px;
+        }
+
+        label {
+            font-size: 13px;
         }
 
         a {
             color: white;
             display: block;
-            margin-top: 10px;
+            margin-top: 8px;
             text-align: center;
+            font-size: 13px;
         }
     </style>
 </head>
 <body>
 
 <div class="box">
-    <h2>Đăng Ký</h2>
+    <h3>Đăng Ký</h3>
     <form method="post">
         <input type="text" name="username" placeholder="Tên đăng ký" required>
+
         <input type="password" name="password" placeholder="Mật khẩu" required>
+
         <input type="password" name="confirm" placeholder="Xác nhận mật khẩu" required>
-        <input type="text" name="phone" placeholder="Số điện thoại (chỉ giám sát)">
+        {% if error_pw %}
+            <div class="error">{{ error_pw }}</div>
+        {% endif %}
+
+        <input type="text" name="phone" placeholder="Số điện thoại">
 
         <label>
             <input type="checkbox" name="agree"> Xác nhận quy định
         </label>
+        {% if error_agree %}
+            <div class="error">{{ error_agree }}</div>
+        {% endif %}
 
         <button type="submit">Tạo tài khoản</button>
     </form>
 
-    <a href="/">Quay lại đăng nhập</a>
+    <a href="/">Quay lại</a>
 </div>
 
 </body>
