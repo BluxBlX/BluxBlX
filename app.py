@@ -9,8 +9,8 @@ def login():
     error = None
 
     if request.method == "POST":
-        user = request.form.get("username")
-        pw = request.form.get("password")
+        user = request.form.get("username", "")
+        pw = request.form.get("password", "")
 
         if user in users and users[user]["password"] == pw:
             return f"<h2>Đăng nhập thành công: {user}</h2>"
@@ -24,21 +24,36 @@ def login():
 def register():
     error_pw = None
     error_agree = None
+    error_user = None
 
     if request.method == "POST":
-        user = request.form.get("username")
-        pw = request.form.get("password")
-        confirm = request.form.get("confirm")
-        phone = request.form.get("phone")
+        user = request.form.get("username", "").strip()
+        pw = request.form.get("password", "")
+        confirm = request.form.get("confirm", "")
+        phone = request.form.get("phone", "")
         agree = request.form.get("agree")
 
-        if not agree:
-            error_agree = "Bạn phải xác nhận quy định"
+        # check trống
+        if not user or not pw:
+            error_user = "Không được để trống"
 
-        if pw != confirm:
+        # check trùng
+        elif user in users:
+            error_user = "Tài khoản đã tồn tại"
+
+        # check mật khẩu
+        elif pw != confirm:
             error_pw = "Mật khẩu không khớp"
 
-        if not error_pw and not error_agree:
+        elif len(pw) < 6 or len(pw) > 20:
+            error_pw = "Mật khẩu 6-20 ký tự"
+
+        # check checkbox
+        elif not agree:
+            error_agree = "Phải xác nhận"
+
+        # OK
+        else:
             users[user] = {
                 "password": pw,
                 "phone": phone
@@ -48,7 +63,8 @@ def register():
     return render_template(
         "register.html",
         error_pw=error_pw,
-        error_agree=error_agree
+        error_agree=error_agree,
+        error_user=error_user
     )
 
 
