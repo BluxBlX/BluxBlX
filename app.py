@@ -2,10 +2,12 @@ from flask import Flask, render_template, request, redirect
 
 app = Flask(__name__)
 
-users = {}  # lưu tạm (không phải database thật)
+users = {}
 
 @app.route("/", methods=["GET", "POST"])
 def login():
+    error = None
+
     if request.method == "POST":
         user = request.form.get("username")
         pw = request.form.get("password")
@@ -13,13 +15,16 @@ def login():
         if user in users and users[user]["password"] == pw:
             return f"<h2>Đăng nhập thành công: {user}</h2>"
         else:
-            return "<h3>Sai tài khoản hoặc mật khẩu</h3>"
+            error = "Sai tài khoản hoặc mật khẩu"
 
-    return render_template("login.html")
+    return render_template("login.html", error=error)
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    error_pw = None
+    error_agree = None
+
     if request.method == "POST":
         user = request.form.get("username")
         pw = request.form.get("password")
@@ -28,19 +33,23 @@ def register():
         agree = request.form.get("agree")
 
         if not agree:
-            return "<h3>Bạn phải xác nhận quy định</h3>"
+            error_agree = "Bạn phải xác nhận quy định"
 
         if pw != confirm:
-            return "<h3>Mật khẩu không khớp</h3>"
+            error_pw = "Mật khẩu không khớp"
 
-        users[user] = {
-            "password": pw,
-            "phone": phone
-        }
+        if not error_pw and not error_agree:
+            users[user] = {
+                "password": pw,
+                "phone": phone
+            }
+            return redirect("/")
 
-        return redirect("/")
-
-    return render_template("register.html")
+    return render_template(
+        "register.html",
+        error_pw=error_pw,
+        error_agree=error_agree
+    )
 
 
 if __name__ == "__main__":
